@@ -30,20 +30,31 @@ function processDirectory(dir) {
     let total_successful_logins = 0;
     let total_unique_users = 0;
     let total_failures = 0;
-    let filenames = fs.readdirSync(process.argv[2]);
+    let filenames = fs.readdirSync(dir);
     for (var file of filenames) {
-        data = processSingleFile(`${process.argv[2]}${file}`);
+        data = processSingleFile(`${dir}${file}`);
         total_successful_logins += data[0];
         total_unique_users += data[1];
         total_failures += data[2];
     }
     return [total_successful_logins, total_unique_users, total_failures];
 }
-console.log("Running test...");
-let test_run = processDirectory(testDir);
-if (sameArray(test_run, [26171, 22586, 6573])) {
-    console.log("%c Test passed.", "color:green");
+function runTest() {
+    console.log("Running test...");
+    let test_run = processDirectory(testDir);
+    if (sameArray(test_run, [26171, 22586, 6573])) {
+        console.log("%c Test passed.", "color:green");
+    }
+    else {
+        console.log("%c Test failed.", "color:red");
+    }
+}
+function pretty_print(proxy_data) {
+    console.log(`Total successful logins: ${proxy_data[0]}; sorted by users: ${proxy_data[1]}; failures: ${proxy_data[2]}.`);
+}
+if (process.argv[2]) {
+    pretty_print(processDirectory(process.argv[2]));
 }
 else {
-    console.log("%c Test failed.", "color:red");
+    runTest();
 }
