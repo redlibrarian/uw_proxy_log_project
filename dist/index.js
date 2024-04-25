@@ -1,4 +1,8 @@
 import * as fs from 'fs';
+const testDir = "test-data/";
+function sameArray(array1, array2) {
+    return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+}
 function processSingleFile(filename) {
     let successful_logins = []; // refactor: these no longer need to be arrays, just counts.
     let sorted_by_user = [];
@@ -17,19 +21,29 @@ function processSingleFile(filename) {
             failures.push(event);
         }
     }
-    console.log(`${filename} successes: ${successful_logins.length}`);
-    console.log(`${filename}: sorted_by_user: ${sorted_by_user.length}`);
+    //	console.log(`${filename} successes: ${successful_logins.length}`);
+    //	console.log(`${filename}: sorted_by_user: ${sorted_by_user.length}`);
     return [successful_logins.length, sorted_by_user.length, failures.length];
 }
-let data = [];
-let total_successful_logins = 0;
-let total_unique_users = 0;
-let total_failures = 0;
-let filenames = fs.readdirSync(process.argv[2]);
-for (var file of filenames) {
-    data = processSingleFile(`${process.argv[2]}${file}`);
-    total_successful_logins += data[0];
-    total_unique_users += data[1];
-    total_failures += data[2];
+function processDirectory(dir) {
+    let data = [];
+    let total_successful_logins = 0;
+    let total_unique_users = 0;
+    let total_failures = 0;
+    let filenames = fs.readdirSync(process.argv[2]);
+    for (var file of filenames) {
+        data = processSingleFile(`${process.argv[2]}${file}`);
+        total_successful_logins += data[0];
+        total_unique_users += data[1];
+        total_failures += data[2];
+    }
+    return [total_successful_logins, total_unique_users, total_failures];
 }
-console.log(`Total successful logins: ${total_successful_logins} / Total unique users: ${total_unique_users} / Total failure: ${total_failures}.`);
+console.log("Running test...");
+let test_run = processDirectory(testDir);
+if (sameArray(test_run, [26171, 22586, 6573])) {
+    console.log("%c Test passed.", "color:green");
+}
+else {
+    console.log("%c Test failed.", "color:red");
+}
