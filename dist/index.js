@@ -1,29 +1,32 @@
 import * as fs from 'fs';
-const testDir = "test-data/";
+const test_dir = "test-data/";
+const test_data = [26171, 22586, 6573];
 function sameArray(array1, array2) {
     return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 function processSingleFile(filename) {
-    let successful_logins = []; // refactor: these no longer need to be arrays, just counts.
-    let sorted_by_user = [];
-    let failures = [];
+    let successful_logins = 0;
+    let sorted_by_user = 0;
+    let failures = 0;
     const lines = fs.readFileSync(filename, { encoding: 'utf8', flag: 'r' }).split('\n');
     for (var line of lines) {
-        var tokens = line.split('\t');
-        var event = tokens[1];
-        if (event == "Login.Success" || event == "Login.Success.Relogin") {
-            successful_logins.push(event);
-        }
-        if (event == "Login.Success") {
-            sorted_by_user.push(event);
-        }
-        if (event == "Login.Failure") {
-            failures.push(event);
+        switch (line.split('\t')[1]) {
+            case "Login.Success": {
+                successful_logins += 1;
+                sorted_by_user += 1;
+                break;
+            }
+            case "Login.Success.Relogin": {
+                successful_logins += 1;
+                break;
+            }
+            case "Login.Failure": {
+                failures += 1;
+                break;
+            }
         }
     }
-    //	console.log(`${filename} successes: ${successful_logins.length}`);
-    //	console.log(`${filename}: sorted_by_user: ${sorted_by_user.length}`);
-    return [successful_logins.length, sorted_by_user.length, failures.length];
+    return [successful_logins, sorted_by_user, failures];
 }
 function processDirectory(dir) {
     let data = [];
@@ -41,8 +44,8 @@ function processDirectory(dir) {
 }
 function runTest() {
     console.log("Running test...");
-    let test_run = processDirectory(testDir);
-    if (sameArray(test_run, [26171, 22586, 6573])) {
+    let test_run = processDirectory(test_dir);
+    if (sameArray(test_run, test_data)) {
         console.log("%c Test passed.", "color:green");
     }
     else {
