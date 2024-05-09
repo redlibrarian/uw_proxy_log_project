@@ -45,6 +45,19 @@ void processSingleFile(char* filename, struct ProxyLogins* proxy_logins){
 		free(line);
 }
 
+void test_equality(struct ProxyLogins* proxy_logins, struct ProxyLogins* test_logins){
+
+	printf("Running test...\n");
+
+	if(proxy_logins->successes == test_logins->successes && 
+			proxy_logins->users == test_logins->users &&
+			proxy_logins->failures == test_logins->failures){
+		printf("Test passed!\n");
+	} else {
+		printf("Test failed!\n");
+	}
+}
+
 
 int main(int argc, char *argv[]){
 
@@ -60,15 +73,8 @@ int main(int argc, char *argv[]){
 
 	processSingleFile(argv[1], &proxy_logins);
 
-		printf("Running test...\n");
+	test_equality(&proxy_logins, &test_logins);
 
-	if(proxy_logins.successes == test_logins.successes && 
-			proxy_logins.users == test_logins.users &&
-			proxy_logins.failures == test_logins.failures){
-		printf("Test passed!\n");
-	} else {
-		printf("Test failed!\n");
-	}
 
 }
 
